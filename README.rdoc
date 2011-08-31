@@ -1,0 +1,12 @@
+= JSON_Minifier
+
+author:: Arwid Bancewicz http://arwid.ca
+version:: 0.1
+updated:: 31 Aug 2011
+dependencies:: Underscore.js (tested with 1.1.7)
+
+See http://arwid.github.com/JSON_Minifier/test.html for an example.
+
+= License
+
+JSON_Minifier is covered by the MIT License.
