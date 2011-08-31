@@ -5,7 +5,38 @@ version:: 0.1
 updated:: 31 Aug 2011
 dependencies:: Underscore.js (tested with 1.1.7)
 
-See http://arwid.github.com/JSON_Minifier/test.html for an example.
+JSON_Minifier minifies a JSON array of Objects. Its motivation is to reduce the bandwidth of JSON Web Services. See http://arwid.github.com/JSON_Minifier/test.html for an example which reduces a simple JSON by 50%.
+
+= Usage
+
+Use <code>_.JSON_minify</code> to minify a JSONString or JSONObject and <code>_.JSON_revert</code> to revert it back to original.
+
+  minified = _.JSON_minify([{ "firstName": "John" , "lastName": "Doe"   , "age": 23 }])
+  reverted = _.JSON_revert(minified)
+
+As a very simple example, the following JSON
+  [
+    { "firstName": "John" , "lastName": "Doe"   , "age": 23 },
+    { "firstName": "Mary" , "lastName": "Smirth", "age": 32 },
+    { "firstName": "Sally", "lastName": "Green" , "age": 27 },
+    { "firstName": "Jim"  , "lastName": "Galley", "age": 41 }
+  ]
+
+...reduces to
+
+  {
+    "data": [["John","Doe",23],["Mary","Smirth",32],["Sally","Green",27],["Jim","Galley",41]],
+    "map" : ["firstName","lastName","age"]
+  }
+
+= Todos
+
+* Add support for more complicated JSONs. A mapping could possibly look like this:
+  
+  <code>"map" : {"name":"[0]","address":"[1]","postalCode":"[1][0]","city":[1][1]"}</code>
+
+* Extend http://api.jquery.com/jQuery.ajax/ by offering 'jsonm' as a datatype.
+* Create a ruby gem
 
 = License
 
