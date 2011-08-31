@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JSON_Minifier Test</title>
+  <!--[if IE]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style>
+    article, aside, figure, footer, header, hgroup, 
+    menu, nav, section { display: block; }
+    h1,h2,h3,h4,h5,h6 { font-size: 100%; margin: 0; padding: 0 }
+    p { margin: 0; padding: 0 }
+  </style>
+</head>
+<body>
+  <section></section>
+  <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+  <script src="https://raw.github.com/Arwid/JSON_Minifier/master/json_minifier.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
+  <script type="text/coffeescript">
+    console.log = (arguments...) -> 
+      $("section").append "<h3>#{arguments[0]}</h3><p>#{arguments[1..arguments.length-1].join(" ")}</p>"
+  
+    data = [
+      { firstName : "John" , lastName : "Doe"    , age : 23 }
+      { firstName : "Mary" , lastName : "Smirth" , age : 32 }
+      { firstName : "Sally", lastName : "Green"  , age : 27 }
+      { firstName : "Jim"  , lastName : "Galley" , age : 41 }
+      { firstName : "John" , lastName : "Doe"    , age : 23 }
+      { firstName : "Mary" , lastName : "Smirth" , age : 32 }
+      { firstName : "Sally", lastName : "Green"  , age : 27 }
+      { firstName : "Jim"  , lastName : "Galley" , age : 41 }
+      { firstName : "John" , lastName : "Doe"    , age : 23 }
+      { firstName : "Mary" , lastName : "Smirth" , age : 32 }
+      { firstName : "Mary" , lastName : "Smirth" , age : 32 }
+    ]
+
+    console.log "Original=", original = JSON.stringify data
+    console.log "Minified=", minified = _(data).JSON_minify true
+    console.log "Reverted=", reverted = _(minified).JSON_revert true
+    console.log "Original===Reverted", original == reverted
+    reduction = ((original.length - minified.length) / original.length) * 100
+    console.log "Reduction=", Math.floor(reduction * 100) / 100 + "%"
+  </script>
+</body>
+</html>
