@@ -5,7 +5,7 @@ version:: 0.1
 updated:: 31 Aug 2011
 dependencies:: Underscore.js (tested with 1.1.7)
 
-JSON_Minifier minifies a JSON array of Objects. Its motivation is to reduce the bandwidth of JSON Web Services. See http://arwid.github.com/JSON_Minifier/test.html for an example which reduces a simple JSON by 50%.
+JSON_Minifier minifies a JSON array of Objects. Its motivation is to reduce the bandwidth of JSON Web Services. See http://arwid.github.com/JSON_Minifier for an example which reduces a simple JSON by 50%.
 
 = Usage
 
