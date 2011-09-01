@@ -8,16 +8,36 @@
   
   @date 31 Aug 2011
   @author Arwid Bancewicz http://arwid.ca
-  @version 0.1
+  @version 0.2
   */
   var JSON_Minifier;
   JSON_Minifier = (function() {
-    var getKeys, getValues;
+    var composeKeyValues, getKeys, getValues;
     getKeys = function(array) {
       return _(array).chain().map(function(obj) {
         return _.keys(obj);
       }).flatten().union().value();
     };
+    ({
+      deepKeys: function(object, keys) {
+        var childkeys, key, val;
+        if (keys == null) {
+          keys = [];
+        }
+        if (_.isArray(object)) {
+          object = object[0];
+          for (key in object) {
+            val = object[key];
+            keys.push(key);
+            if (_.isArray(val)) {
+              keys.push(childkeys = []);
+              _.deepKeys(val, childkeys);
+            }
+          }
+        }
+        return keys;
+      }
+    });
     getValues = function(array, keys) {
       if (keys == null) {
         keys = getKeys(array);
@@ -26,6 +46,46 @@
         return _(keys).map(function(b) {
           return obj[b];
         });
+      });
+    };
+    ({
+      deepValues: function(objects, values) {
+        var childObject, childValues, key, object, val, _i, _len;
+        if (values == null) {
+          values = [];
+        }
+        if (_.isArray(objects)) {
+          for (_i = 0, _len = objects.length; _i < _len; _i++) {
+            object = objects[_i];
+            values.push(childObject = []);
+            for (key in object) {
+              val = object[key];
+              if (_.isArray(val)) {
+                childObject.push(childValues = []);
+                _.deepValues(val, childValues);
+              } else {
+                childObject.push(val);
+              }
+            }
+          }
+        }
+        return values;
+      }
+    });
+    composeKeyValues = function(keys, values) {
+      return _.map(values, function(row) {
+        var childData, data, index, value, _i, _len;
+        data = {};
+        index = 0;
+        for (_i = 0, _len = row.length; _i < _len; _i++) {
+          value = row[_i];
+          if (!_.isArray(value)) {
+            data[keys[index++]] = value;
+          } else {
+            data[keys[index++]] = childData = composeKeyValues(keys[index++], value);
+          }
+        }
+        return data;
       });
     };
     return {
@@ -37,11 +97,11 @@
         if (_(jsonArray).isString()) {
           jsonArray = JSON.parse(jsonArray);
         }
-        keys = getKeys(jsonArray);
-        data = getValues(jsonArray, keys);
+        keys = _.deepKeys(jsonArray);
+        data = _.deepValues(jsonArray);
         minified = {
-          data: data,
-          map: keys
+          map: keys,
+          data: data
         };
         if (stringify) {
           return JSON.stringify(minified);
@@ -57,14 +117,8 @@
         if (_(minified).isString()) {
           minified = JSON.parse(minified);
         }
-        original = _.map(minified.data, function(datum) {
-          var row;
-          row = {};
-          _(minified.map).each(function(key, index) {
-            return row[key] = datum[index];
-          });
-          return row;
-        });
+        original = composeKeyValues(minified.map, minified.data);
+        console.log(original);
         if (stringify) {
           return JSON.stringify(original);
         } else {
