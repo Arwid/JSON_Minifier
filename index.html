@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JSON_Minifier</title>
+  <!--[if IE]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style>
+    article, aside, figure, footer, header, hgroup, 
+    menu, nav, section { display: block; }
+    h1,h2,h3,h4,h5,h6 { font-size: 100%; margin: 0; padding: 0 }
+    p { margin: 0; padding: 0 }
+    * { margin: 0; padding: 0 }
+    
+    header { position: fixed; bottom: 0; right:0; z-index: 100; margin-right: 10px; margin-bottom: 8px; background: #eee }
+    header * { display: inline-block; }
+    section { position: fixed; top: 0; bottom: 0; width: 33.334%; outline: none; }
+    #original { left: 0 }
+    #minified { left: 33.334% }
+    #reverted { right: 0 }
+    
+    textarea { position: absolute; top: 0; bottom: 0; left: 0; right: 0; outline: none; border-right: none}
+    
+/*      section { position: relative; }*/
+    section div { 
+      background: #eee; height: 28px; line-height: 28px;
+      font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
+      text-align: center;
+      font-size: 11px; font-weight: bold;
+      position: absolute; top: 1px; right: 0;
+      z-index: 99;
+      border-bottom-left-radius: 5px;
+      padding: 0 15px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>JSON_Minifier</h1>
+    <a href="http://github.com/arwid/json_minifier">github.com/arwid/json_minifier</a>
+  </header>
+  
+  <section id="original">
+    <div>Original</div>
+    <textarea></textarea>    
+  </section>
+  <section id="minified">
+    <div>Minified <span></span></div>
+    <textarea disabled></textarea>
+  </section>
+  <section id="reverted">
+    <div>Reverted</div>
+    <textarea disabled></textarea>
+  </section>
+  
+  <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+  <script src="https://raw.github.com/Arwid/JSON_Minifier/v2/json_minifier.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script src="https://raw.github.com/douglascrockford/JSON-js/master/json2.js"></script>
+  <script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
+  <script type="text/coffeescript">
+    
+    # Update on keyup
+    $("#original textarea").keyup -> 
+      update()
+      true
+      
+    # Update View
+    update = ->
+      try
+        # update textareas
+        original = JSON.parse $("#original textarea").val() #.replace /\t|\n/g, ''
+        minified = _(original).JSON_minify()
+        $("#minified textarea").val JSON.stringify minified, null, '\t'
+        reverted = _(minified).JSON_revert()
+        $("#reverted textarea").val  JSON.stringify reverted, null, '\t'
+      
+        # get percent reduction
+        minified = JSON.stringify minified
+        original = JSON.stringify original
+        reduction = ((original.length - minified.length) / original.length) * 100
+        reduction = Math.floor(reduction * 100) / 100
+        $("#minified div span").html reduction + "%"
+        
+      catch error
+        $("#minified textarea").val ""
+        $("#reverted textarea").val ""
+        $("#minified div span").html ""
+    
+    # Sample Data
+    data = [
+      { id: 0, firstName : "John" , lastName : "Doe"    , age : 23, parents :[{ id: 1, type: "Mom"}, { id: 3, type: "Dad"}] }
+      { id: 1, firstName : "Mary" , lastName : "Smirth" , age : 50 }
+      { id: 2, firstName : "Sally", lastName : "Green"  , age : 21, parents :[{ id: 1, type: "Mom"}, { id: 3, type: "Dad"}] }
+      { id: 3, firstName : "Jim"  , lastName : "Galley" , age : 52 }
+      { id: 4, firstName : "John" , lastName : "Doe"    , age : 23 }
+      { id: 5, firstName : "Mary" , lastName : "Smirth" , age : 32 }
+      { id: 6, firstName : "Sally", lastName : "Green"  , age : 27 }
+      { id: 7, firstName : "Jim"  , lastName : "Galley" , age : 41 }
+      { id: 8, firstName : "John" , lastName : "Doe"    , age : 23 }
+      { id: 9, firstName : "Mary" , lastName : "Smirth" , age : 32 }
+      { id: 10, firstName : "Mary" , lastName : "Smirth" , age : 32 }
+    ]
+    
+    # Place Data
+    $("#original textarea").html JSON.stringify data, null, '\t'
+    update()
+    
+  </script>
+</body>
+</html>
