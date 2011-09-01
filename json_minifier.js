@@ -12,32 +12,30 @@
   */
   var JSON_Minifier;
   JSON_Minifier = (function() {
-    var composeKeyValues, getKeys, getValues;
+    var composeKeyValues, deepKeys, deepValues, getKeys, getValues;
     getKeys = function(array) {
       return _(array).chain().map(function(obj) {
         return _.keys(obj);
       }).flatten().union().value();
     };
-    ({
-      deepKeys: function(object, keys) {
-        var childkeys, key, val;
-        if (keys == null) {
-          keys = [];
-        }
-        if (_.isArray(object)) {
-          object = object[0];
-          for (key in object) {
-            val = object[key];
-            keys.push(key);
-            if (_.isArray(val)) {
-              keys.push(childkeys = []);
-              _.deepKeys(val, childkeys);
-            }
+    deepKeys = function(object, keys) {
+      var childkeys, key, val;
+      if (keys == null) {
+        keys = [];
+      }
+      if (_.isArray(object)) {
+        object = object[0];
+        for (key in object) {
+          val = object[key];
+          keys.push(key);
+          if (_.isArray(val)) {
+            keys.push(childkeys = []);
+            deepKeys(val, childkeys);
           }
         }
-        return keys;
       }
-    });
+      return keys;
+    };
     getValues = function(array, keys) {
       if (keys == null) {
         keys = getKeys(array);
@@ -48,30 +46,28 @@
         });
       });
     };
-    ({
-      deepValues: function(objects, values) {
-        var childObject, childValues, key, object, val, _i, _len;
-        if (values == null) {
-          values = [];
-        }
-        if (_.isArray(objects)) {
-          for (_i = 0, _len = objects.length; _i < _len; _i++) {
-            object = objects[_i];
-            values.push(childObject = []);
-            for (key in object) {
-              val = object[key];
-              if (_.isArray(val)) {
-                childObject.push(childValues = []);
-                _.deepValues(val, childValues);
-              } else {
-                childObject.push(val);
-              }
+    deepValues = function(objects, values) {
+      var childObject, childValues, key, object, val, _i, _len;
+      if (values == null) {
+        values = [];
+      }
+      if (_.isArray(objects)) {
+        for (_i = 0, _len = objects.length; _i < _len; _i++) {
+          object = objects[_i];
+          values.push(childObject = []);
+          for (key in object) {
+            val = object[key];
+            if (_.isArray(val)) {
+              childObject.push(childValues = []);
+              deepValues(val, childValues);
+            } else {
+              childObject.push(val);
             }
           }
         }
-        return values;
       }
-    });
+      return values;
+    };
     composeKeyValues = function(keys, values) {
       return _.map(values, function(row) {
         var childData, data, index, value, _i, _len;
@@ -97,8 +93,8 @@
         if (_(jsonArray).isString()) {
           jsonArray = JSON.parse(jsonArray);
         }
-        keys = _.deepKeys(jsonArray);
-        data = _.deepValues(jsonArray);
+        keys = deepKeys(jsonArray);
+        data = deepValues(jsonArray);
         minified = {
           map: keys,
           data: data

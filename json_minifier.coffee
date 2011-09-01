@@ -25,7 +25,7 @@ JSON_Minifier = (->
       .value()
       
   # {a:0,b:[{c:1,d:[{e:2}]}],f:3} becomes [a,b,[c,d,[e]],f]
-  deepKeys: (object, keys = []) ->
+  deepKeys = (object, keys = []) ->
     if _.isArray object
       # always get the schema from the first element
       object = object[0]
@@ -34,7 +34,7 @@ JSON_Minifier = (->
         keys.push key
         if _.isArray val
           keys.push childkeys = []
-          _.deepKeys val, childkeys
+          deepKeys val, childkeys
     keys
       
   # DEPRECATED by deepValues()
@@ -45,14 +45,14 @@ JSON_Minifier = (->
           obj[b]
           
   # {a:0,b:[{c:1,d:[{e:2}]}],f:3} becomes [0,[1,[2]],3]
-  deepValues: (objects, values = []) ->
+  deepValues = (objects, values = []) ->
     if _.isArray objects
       for object in objects
         values.push childObject = []
         for key, val of object
           if _.isArray val
             childObject.push childValues = []
-            _.deepValues val, childValues
+            deepValues val, childValues
           else
             childObject.push val
     values
@@ -79,8 +79,8 @@ JSON_Minifier = (->
     if _(jsonArray).isString() then jsonArray = JSON.parse jsonArray
     
     # do the magic
-    keys = _.deepKeys jsonArray
-    data = _.deepValues jsonArray
+    keys = deepKeys jsonArray
+    data = deepValues jsonArray
     minified = { map: keys, data: data }
     
     # return the minified, stringified if asked
