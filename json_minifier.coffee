@@ -27,7 +27,7 @@ JSON_Minifier = (->
   # {a:0,b:[{c:1,d:[{e:2}]}],f:3} becomes [a,b,[c,d,[e]],f]
   deepKeys = (object, keys = []) ->
     if _.isArray object
-      # always get the schema from the first element
+      # Always get the schema from the first element
       object = object[0]
 
       for key, val of object
@@ -57,7 +57,7 @@ JSON_Minifier = (->
             childObject.push val
     values
   
-  # Put key and value arraws together
+  # Put key and value arrays together
   composeKeyValues = (keys, values) ->
     _.map values, (row) ->
       data = {}
@@ -72,31 +72,31 @@ JSON_Minifier = (->
   
   # PUBLIC Members
   
-  # take a jsonArray and return a minified version
+  # Take a jsonArray and return a minified version
   minify: (jsonArray, stringify = no) ->
     
-    # if it's a JSON string then convert it into an object by parsing it
+    # If it's a JSON string then convert it into an object by parsing it
     if _(jsonArray).isString() then jsonArray = JSON.parse jsonArray
     
-    # do the magic
+    # Do the magic
     keys = deepKeys jsonArray
     data = deepValues jsonArray
     minified = { map: keys, data: data }
     
-    # return the minified, stringified if asked
+    # Return the minified, stringified if asked
     if stringify then JSON.stringify minified else minified 
   
-  # take a minified object or JSONString and return the original object
+  # Take a minified object or JSONString and return the original object
   revert: (minified, stringify = no) ->
     
-    # if it's a JSON string then convert it into an object by parsing it
+    # If it's a JSON string then convert it into an object by parsing it
     if _(minified).isString() then minified = JSON.parse minified
     
-    # do the magic
+    # Do the magic
     original = composeKeyValues minified.map, minified.data
     console.log original
     
-    # return the original, stringified if asked
+    # Return the original, stringified if asked
     if stringify then JSON.stringify original else original 
 )()
   
