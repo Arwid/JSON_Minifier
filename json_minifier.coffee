@@ -31,33 +31,33 @@ JSON_Minifier = (->
   
   # PUBLIC Members
   
-  # take a jsonArray and return a minified version
+  # Take a jsonArray and return a minified version
   minify: (jsonArray, stringify = no) ->
     
-    # if it's a JSON string then convert it into an object by parsing it
+    # If it's a JSON string then convert it into an object by parsing it
     if _(jsonArray).isString() then jsonArray = JSON.parse jsonArray
     
-    # do the magic
+    # Do the magic
     keys = getKeys jsonArray
     data = getValues jsonArray, keys
     minified = { data: data, map: keys }
     
-    # return the minified, stringified if asked
+    # Return the minified, stringified if asked
     if stringify then JSON.stringify minified else minified 
   
-  # take a minified object or JSONString and return the original object
+  # Take a minified object or JSONString and return the original object
   revert: (minified, stringify = no) ->
     
-    # if it's a JSON string then convert it into an object by parsing it
+    # If it's a JSON string then convert it into an object by parsing it
     if _(minified).isString() then minified = JSON.parse minified
     
-    # do the magic
+    # Do the magic
     original = _.map minified.data, (datum) ->
       row = {}
       _(minified.map).each (key, index) -> row[key] = datum[index]
       row
     
-    # return the original, stringified if asked
+    # Return the original, stringified if asked
     if stringify then JSON.stringify original else original 
 )()
   
